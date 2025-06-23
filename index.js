@@ -45,7 +45,7 @@ app.get('/api/notes/:id', (request, response) => {
 })
 
 
-app.delete('/api/notes/:id', (request, response) => {
+app.delete('/api/notes/del/:id', (request, response) => {
   const id = Number(request.params.id)
   notes = notes.filter(note => note.id !== id)
 
@@ -77,7 +77,7 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
-app.put('/api/notes/:id', (request, response) => {
+app.put('/api/notes/Up/:id', (request, response) => {
 	const body = request.body
 	 if (body.content === undefined) {
     return response.status(400).json({ error: 'content missing' })
