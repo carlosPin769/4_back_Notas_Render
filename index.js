@@ -7,7 +7,6 @@ const Note = require('./models/note')
 
 app.use(express.json())
 
-
 app.use(express.static('dist'))
 
 const cors = require('cors')
@@ -44,14 +43,13 @@ app.get('/api/notes/:id', (request, response) => {
   })
 })
 
-
-app.delete('/api/notes/del/:id', (request, response) => {
-  const id = Number(request.params.id)
-  notes = notes.filter(note => note.id !== id)
-
-  response.status(204).end()
+app.delete('/api/notes/:id', (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
-
 
 const generateId = () => {
   const maxId = notes.length > 0
@@ -77,17 +75,20 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
-app.put('/api/notes/Up', (request, response) => {
-	const body = request.body
-	 if (body.content === undefined) {
-    return response.status(400).json({ error: 'content missing' })
+
+app.put('/api/notes/:id', (request, response, next) => {
+  const body = request.body
+
+  const note = {
+    content: body.content,
+    important: body.important,
   }
-	const id = Number(request.params.id)
-	const update = { $set: { important: body.important || false } };
-	const options = { new: true };
-	 note.findOneAndUpdate({ _id: id }, update, options).then(savedNote => {
-    response.json(savedNote)
-  })
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
