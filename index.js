@@ -77,6 +77,19 @@ app.post('/api/notes', (request, response) => {
   })
 })
 
+app.put('/api/notes/:id', (request, response) => {
+	const body = request.body
+	 if (body.content === undefined) {
+    return response.status(400).json({ error: 'content missing' })
+  }
+	const id = Number(request.params.id)
+	const update = { $set: { important: body.important || false } };
+	const options = { new: true };
+	 note.findOneAndUpdate({ _id: id }, update, options).then(savedNote => {
+    response.json(savedNote)
+  })
+})
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
